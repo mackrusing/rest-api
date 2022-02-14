@@ -47,6 +47,13 @@ const writeUserData = (file, data) => {
   });
 };
 
+// // write data
+// module.exports.writetoFile = (file, data) => {
+//   fs.writeFile(file, JSON.stringify(data), (err) => {
+//     if (err) throw err;
+//   });
+// };
+
 module.exports = {
   getUserById,
   getUserByUsername,

@@ -1,17 +1,21 @@
 // require modules
-const { groupEnd } = require('console');
 const express = require('express');
-const fs = require('fs');
 const {
   getUserById,
   getUserByUsername,
-  getIndexById,
-  getIndexByUsername,
-  writeUserData,
-} = require('./helpers');
+  validateUser,
+  checkForExistingUser,
+  createUser,
+  addUser,
+  replaceUser,
+  deleteUser,
+  readJsonFile,
+  modifyUser,
+  writeJsonFile,
+} = require('./user-helpers');
 
-// app data
-const appData = require('./users');
+// locarion of users json file
+const userFile = './users.json';
 
 // create instance of express
 const app = express();
@@ -26,51 +30,109 @@ app.get('/users', (req, res) => {
 
   if (id) {
     // return user by id
-    const user = getUserById(appData, parseInt(id));
-    if (user !== 400) {
+    const user = getUserById(userFile, id);
+    if (user) {
       res.status(200).send(user);
     } else {
       res.status(404).send({ message: 'user not found' });
     }
   } else if (username) {
     // return user by username
-    const user = getUserByUsername(appData, username);
-    if (user !== 400) {
+    const user = getUserByUsername(userFile, username);
+    if (user) {
       res.status(200).send(user);
     } else {
       res.status(404).send({ message: 'user not found' });
     }
   } else {
     // return all data
-    res.status(200).send(appData);
+    const users = readJsonFile(userFile);
+    res.status(200).send(users);
   }
 });
 
 // post (create) user
 app.post('/users', (req, res) => {
-  // get new user properties
-  const { id, username, firstName, lastName } = req.body;
+  // create user object
+  const user = createUser(req.body);
 
-  if (!id || !username || !firstName || !lastName) {
-    // check for valid user object
-    res.status(418).send({ message: 'not all required properties provided' });
-  } else if (
-    getUserById(appData, id) !== 404 ||
-    getUserByUsername(appData, username) !== 404
-  ) {
-    // check for existing user
-    res.status(409).send({ message: 'user already exists' });
+  if (!validateUser(user)) {
+    // invalid user object
+    res.status(418).send({ message: 'invalid user object' });
+  } else if (checkForExistingUser(userFile, user)) {
+    // user with this id or username already exists
+    res
+      .status(409)
+      .send({ message: 'user with this id or username already exists' });
   } else {
-    // create new user
-    const user = {
-      id: id,
-      username: username,
-      firstName: firstName,
-      lastName: lastName,
-    };
-    appData.push(user);
-    writeUserData('users.json', appData);
+    // add user to file
+    addUser(userFile, user);
     res.status(204).send({});
+  }
+});
+
+// put (create / update) user
+app.put('/users', (req, res) => {
+  // create user object
+  const user = createUser(req.body);
+
+  if (!validateUser(user)) {
+    // invalid user object
+    res.status(418).send({ message: 'invalid user object' });
+  } else if (checkForExistingUser(userFile, user)) {
+    // user with this id or username already exists
+    replaceUser(userFile, user);
+    res.status(204).send({});
+  } else {
+    // add user to file
+    addUser(userFile, user);
+    res.status(204).send({});
+  }
+});
+
+// patch (update) user
+app.patch('/users', (req, res) => {
+  // get query parameters
+  const { id, username } = req.query;
+
+  if (id) {
+    // get data from file
+    const data = readJsonFile(userFile);
+
+    // modify user by id
+    const user = data.filter((user) => user.id === id)[0];
+
+    //
+    const newUser = {
+      id: req.body.id ? req.body.id : user.id,
+      username: req.body.username ? req.body.username : user.username,
+      displayName: req.body.displayName
+        ? req.body.displayName
+        : user.displayName,
+    };
+    // remove old user obj
+    data.filter((existingUser) => existingUser.id !== user.id);
+    // add new user obj
+    data.push(newUser);
+    writeJsonFile(userFile, data);
+
+    if (user) {
+      modifyUser(userFile, user, req.body);
+      res.status(204).send({});
+    } else {
+      res.status(404).send({ message: 'user not found' });
+    }
+  } else if (username) {
+    // modify user by username
+    const user = getUserByUsername(userFile, username);
+    if (user) {
+      modifyUser(userFile, user, req.body);
+      res.status(204).send({});
+    } else {
+      res.status(404).send({ message: 'user not found' });
+    }
+  } else {
+    res.status(418).send({ message: 'no valid query provided' });
   }
 });
 
@@ -81,26 +143,24 @@ app.delete('/users', (req, res) => {
 
   if (id) {
     // delete user by id
-    const userIndex = getIndexById(appData, parseInt(id));
-    if (userIndex) {
-      appData.splice(userIndex, 1);
-      writeUserData('users.json', appData);
+    const user = getUserById(userFile, id);
+    if (user) {
+      deleteUser(userFile, user);
       res.status(204).send({});
     } else {
       res.status(404).send({ message: 'user not found' });
     }
   } else if (username) {
     // delete user by username
-    const userIndex = getIndexByUsername(appData, username);
-    if (userIndex) {
-      appData.splice(userIndex, 1);
-      writeUserData('users.json', appData);
+    const user = getUserByUsername(userFile, username);
+    if (user) {
+      deleteUser(userFile, user);
       res.status(204).send({});
     } else {
       res.status(404).send({ message: 'user not found' });
     }
   } else {
-    res.status(418).send({ message: 'no query provided' });
+    res.status(418).send({ message: 'no valid query provided' });
   }
 });
 
