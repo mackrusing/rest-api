@@ -75,29 +75,46 @@ module.exports.postReq = (req, res) => {
 
 module.exports.putReq = (req, res) => {
   // get json data
-  const data = readJsonFile(userFile);
+  let data = readJsonFile(userFile);
 
   // get query parameters
   const { id, username } = req.query;
 
   // create user object
-  const user = createUser(req.body);
+  const newUser = createUser(req.body);
+
+  if (!validateUser(newUser)) {
+    // invalid user object
+    return res.status(418).send({ message: 'invalid user object' });
+  }
 
   if (id) {
-    // find + return user by id
-    const user = filterArrByProperty(data, 'id', id);
-    return user
-      ? res.status(200).send(user)
-      : res.status(404).send({ message: 'user not found' });
+    // find + delete user by id then add new user
+    const exUser = filterArrByProperty(data, 'id', id);
+    if (exUser) {
+      deleteObjByProperty(data, 'id', id);
+      data.push(user);
+      return res.status(204).send({});
+    } else {
+      return res.status(404).send({ message: 'user not found' });
+    }
   } else if (username) {
-    // find + return user by username
+    // find + delete user by username then add new user
     const user = filterArrByProperty(data, 'username', username);
-    return user
-      ? res.status(200).send(user)
-      : res.status(404).send({ message: 'user not found' });
+    if (user) {
+      deleteObjByProperty(data, 'username', username);
+      data.push(user);
+      return res.status(204).send({});
+    } else {
+      return res.status(404).send({ message: 'user not found' });
+    }
   } else {
-    // return all users
-    return res.status(200).send(data);
+    const user = filterArrByProperty(data, 'id');
+    if (filterArrByProperty(data, 'id', user.id)) {
+    }
+    // add user to file
+    data.push(user);
+    return res.status(204).send({});
   }
 
   if (!validateUser(user)) {
