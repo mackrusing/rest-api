@@ -74,7 +74,7 @@ REQ BODY
 ## Put requests to /users
 
 `PUT /users?id=1`, `PUT /users?username=mackrusing`
-: create a new user, replacing an existing user if it has the same id
+: create a new user (same functionality as post), but replaces an existing user if a query is provided
 
 ## Patch requests to /users
 
