@@ -1,2 +1,0 @@
-- create get index functions + change put / patch reqests from delete then add to overwrite
-- when getting index check for multiple objects with this property and throw server error if so (username or id exists in multple places which is illegal and shouldnt happen)
