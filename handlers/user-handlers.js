@@ -1,19 +1,20 @@
 // helpers
 const {
-  validateUser,
-  createUser,
-  readJsonFile,
-  writeJsonFile,
   filterArrByProperty,
   deleteObjByProperty,
-  updateUser,
 } = require('../helpers/helpers');
+const {
+  validateUser,
+  createUser,
+  updateUser,
+} = require('../helpers/user-helpers');
+const { readJsonFile, writeJsonFile } = require('../helpers/json-file-helpers');
 
 // user json file location (relative to index file)
 const userFile = './data/users.json';
 
 /******************************************************************************/
-/**                              user handlers                               **/
+/**                             simple handlers                              **/
 /******************************************************************************/
 
 module.exports.getReq = (req, res) => {
