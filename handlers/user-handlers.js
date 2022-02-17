@@ -1,22 +1,16 @@
 // helpers
 const {
-  getUserById,
-  getUserByUsername,
   validateUser,
-  checkForExistingUser,
   createUser,
-  addUser,
-  replaceUser,
-  deleteUser,
   readJsonFile,
-  modifyUser,
   writeJsonFile,
   filterArrByProperty,
   deleteObjByProperty,
-} = require('./user-helpers');
+  updateUser,
+} = require('../helpers/helpers');
 
-// user json file location
-const userFile = './users.json';
+// user json file location (relative to index file)
+const userFile = './data/users.json';
 
 /******************************************************************************/
 /**                              user handlers                               **/
@@ -77,9 +71,6 @@ module.exports.putReq = (req, res) => {
   // get json data
   let data = readJsonFile(userFile);
 
-  // get query parameters
-  const { id, username } = req.query;
-
   // create user object
   const newUser = createUser(req.body);
 
@@ -88,50 +79,28 @@ module.exports.putReq = (req, res) => {
     return res.status(418).send({ message: 'invalid user object' });
   }
 
-  if (id) {
-    // find + delete user by id then add new user
-    const exUser = filterArrByProperty(data, 'id', id);
-    if (exUser) {
-      deleteObjByProperty(data, 'id', id);
-      data.push(user);
-      return res.status(204).send({});
-    } else {
-      return res.status(404).send({ message: 'user not found' });
-    }
-  } else if (username) {
-    // find + delete user by username then add new user
-    const user = filterArrByProperty(data, 'username', username);
-    if (user) {
-      deleteObjByProperty(data, 'username', username);
-      data.push(user);
-      return res.status(204).send({});
-    } else {
-      return res.status(404).send({ message: 'user not found' });
-    }
-  } else {
-    const user = filterArrByProperty(data, 'id');
-    if (filterArrByProperty(data, 'id', user.id)) {
-    }
-    // add user to file
-    data.push(user);
-    return res.status(204).send({});
-  }
+  // find existing users with matching unique properties
+  const exUserById = filterArrByProperty(data, 'id', newUser.id);
+  const exUserByUsername = filterArrByProperty(
+    data,
+    'username',
+    newUser.username
+  );
 
-  if (!validateUser(user)) {
-    // invalid user object
-    return res.status(418).send({ message: 'invalid user object' });
-  } else if (
-    filterArrByProperty(data, 'id', user.id) ||
-    filterArrByProperty(data, 'username', user.username)
-  ) {
-    // user with this id or username already exists
-    deleteObjByProperty(data, 'id', user.id);
-    data.push(user);
+  if (!exUserById && !exUserByUsername) {
+    // no existing users with matching properties
+    data.push(newUser);
+    writeJsonFile(userFile, data);
+    return res.status(204).send({});
+  } else if (!exUserByUsername || exUserById.id === exUserByUsername.id) {
+    // found users are the same or username doesnt exist
+    data = deleteObjByProperty(data, 'id', newUser.id);
+    data.push(newUser);
+    writeJsonFile(userFile, data);
     return res.status(204).send({});
   } else {
-    // add user to file
-    data.push(user);
-    return res.status(204).send({});
+    // username is already used
+    return res.status(409).send({ message: 'username is already in use' });
   }
 };
 
@@ -139,42 +108,43 @@ module.exports.patchReq = (req, res) => {
   // get query parameters
   const { id, username } = req.query;
 
+  // get data from file
+  let data = readJsonFile(userFile);
+
   if (id) {
-    // get data from file
-    const data = readJsonFile(userFile);
-
     // modify user by id
-    const user = data.filter((user) => user.id === id)[0];
+    const exUser = filterArrByProperty(data, 'id', id);
 
-    //
-    const newUser = {
-      id: req.body.id ? req.body.id : user.id,
-      username: req.body.username ? req.body.username : user.username,
-      displayName: req.body.displayName
-        ? req.body.displayName
-        : user.displayName,
-    };
+    // check for user
+    if (!exUser) {
+      return res.status(404).send({ message: 'user not found' });
+    }
+
+    // new user
+    const newUser = updateUser(exUser, req.body);
+
     // remove old user obj
-    data.filter((existingUser) => existingUser.id !== user.id);
-    // add new user obj
+    data = deleteObjByProperty(data, 'id', id);
     data.push(newUser);
     writeJsonFile(userFile, data);
-
-    if (user) {
-      modifyUser(userFile, user, req.body);
-      return res.status(204).send({});
-    } else {
-      return res.status(404).send({ message: 'user not found' });
-    }
+    return res.status(204).send({});
   } else if (username) {
     // modify user by username
-    const user = getUserByUsername(userFile, username);
-    if (user) {
-      modifyUser(userFile, user, req.body);
-      return res.status(204).send({});
-    } else {
+    const exUser = filterArrByProperty(data, 'username', username);
+
+    // check for user
+    if (!exUser) {
       return res.status(404).send({ message: 'user not found' });
     }
+
+    // new user
+    const newUser = updateUser(exUser, req.body);
+
+    // remove old user obj
+    data = deleteObjByProperty(data, 'username', username);
+    data.push(newUser);
+    writeJsonFile(userFile, data);
+    return res.status(204).send({});
   } else {
     return res.status(418).send({ message: 'no valid query provided' });
   }

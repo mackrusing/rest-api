@@ -1,6 +1,6 @@
 // require modules
 const express = require('express');
-const userHandlers = require('./user-handlers');
+const userHandlers = require('./handlers/user-handlers');
 
 // create instance of express
 const app = express();

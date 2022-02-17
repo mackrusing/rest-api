@@ -71,3 +71,12 @@ module.exports.validateUser = (user) => {
     return false;
   }
 };
+
+// update user with partially complete object
+module.exports.updateUser = (exUser, reqBody) => {
+  return {
+    id: reqBody.id ? reqBody.id : exUser.id,
+    username: reqBody.username ? reqBody.username : exUser.username,
+    displayName: reqBody.displayName ? reqBody.displayName : exUser.displayName,
+  };
+};
