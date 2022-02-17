@@ -77,8 +77,11 @@ module.exports.putReq = (req, res) => {
 
   if (!validateUser(newUser)) {
     // invalid user object
+    console.log('invalid user');
     return res.status(418).send({ message: 'invalid user object' });
   }
+
+  console.log('user validated');
 
   // find existing users with matching unique properties
   const exUserById = filterArrByProperty(data, 'id', newUser.id);
@@ -90,18 +93,34 @@ module.exports.putReq = (req, res) => {
 
   if (!exUserById && !exUserByUsername) {
     // no existing users with matching properties
+    console.log('there are no users with this id or username');
     data.push(newUser);
     writeJsonFile(userFile, data);
     return res.status(204).send({});
-  } else if (!exUserByUsername || exUserById.id === exUserByUsername.id) {
-    // found users are the same or username doesnt exist
+  } else if (!exUserByUsername) {
+    // username doesnt exist but id does so replace it
+    console.log('this username doesnt exist but id does so replace it');
+    data = deleteObjByProperty(data, 'id', newUser.id);
+    data.push(newUser);
+    writeJsonFile(userFile, data);
+    return res.status(204).send({});
+  } else if (!exUserById) {
+    // id doesnt exist but username does (infered from prev logic)
+    console.log('username is already used');
+    return res.status(409).send({ message: 'username is already in use' });
+  } else if (exUserById.id === exUserByUsername.id) {
+    // username exists but is used by object with selected id object
+    console.log(
+      'username exists but is used by object with selected id object'
+    );
     data = deleteObjByProperty(data, 'id', newUser.id);
     data.push(newUser);
     writeJsonFile(userFile, data);
     return res.status(204).send({});
   } else {
     // username is already used
-    return res.status(409).send({ message: 'username is already in use' });
+    console.log('idk wtf happened tbh');
+    return res.status(500).send({ message: 'idk wtf happened tbh' });
   }
 };
 
