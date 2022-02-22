@@ -60,10 +60,30 @@ module.exports.findUserIndexByUsername = (arr, value) => {
 
 // validate all users in array
 module.exports.validateUserArr = (arr) => {
+  // iterate through array
+  let allIds = [];
+  let allUsernames = [];
   for (let i = 0; i < arr.length; i++) {
+    // check for invalid user obj
     if (!this.validateUser(arr[i])) {
       return false;
     }
+
+    // check for duplicate id
+    for (let j = 0; j < allIds.length; j++) {
+      if (arr[i].id === allIds[j]) {
+        return false;
+      }
+    }
+    allIds.push(arr[i].id);
+
+    // check for duplicate username
+    for (let j = 0; j < allUsernames.length; j++) {
+      if (arr[i].username === allUsernames[j]) {
+        return false;
+      }
+    }
+    allUsernames.push(arr[i].username);
   }
   return true;
 };
