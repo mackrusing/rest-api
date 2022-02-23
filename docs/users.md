@@ -1,3 +1,5 @@
+[< back to all endpoints](./index.md)
+
 # users
 
 Create, read, update, and delete mock user data.
