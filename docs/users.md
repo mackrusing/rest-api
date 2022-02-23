@@ -11,6 +11,10 @@ Create, read, update, and delete mock user data.
 ## GET /users
 
 Retrieve all users (with no query) or a single user (using a query)
+ 
+```
+curl -X GET http://localhost:8080/users?id=1
+```
 
 ### Optional parameters
 
@@ -78,6 +82,12 @@ All response bodies (if a response returns a body) are of the media type `applic
 
 Add a new user object to the json file
 
+```
+curl -X POST http://localhost:8080/users
+  -H 'Content-Type: application/json'
+  -d '{"id": "3","username":"jamesdoe","displayName":"JamesDoe"}'
+```
+
 ### Request body
 
 The request body must be a complete user object, with a unique id and username.
@@ -127,6 +137,11 @@ No Content
 ## PUT /users
 
 Add a new user or replace an existing user
+```
+curl -X PUT http://localhost:8080/users
+  -H 'Content-Type: application/json'
+  -d '{"id": "3","username":"jamesdoe","displayName":"JamesDoe"}'
+```
 
 ### Request body
 
@@ -174,4 +189,123 @@ No Content
 
 ## PATCH /users
 
+Select an existing user with the query and update it with with the request body.
+
+```
+curl -X PATCH http://localhost:8080/users?id=3
+  -H 'Content-Type: application/json'
+  -d '{"username":"jamesdoe","displayName":"JamesDoe"}'
+```
+
+### Required parameters
+
+*Note: Only one parameter is required; using both will result in an error*
+
+| query param | expected value | description           |
+| ----------- | -------------- | --------------------- |
+| `id`        | string         | find user by id       |
+| `username`  | string         | find user by username |
+
+### Request body
+
+The request body can include or leave out any proprties of a valid user object.
+
+Example with all values:
+```json
+{
+  "id": "3",
+  "username": "JamesDoe",
+  "displayName": "JamesDoe"
+}
+```
+
+Example with excluded values:
+```json
+{
+  "username": "JamesDoe",
+  "displayName": "JamesDoe"
+}
+```
+
+### Responses
+
+204 - the user was updated successfully
+
+```
+No Content
+```
+
+404 - user not found
+
+```json
+{
+  "message": "user not found"
+}
+```
+
+418 - invalid query
+
+```json
+{
+  "message": "invalid query"
+}
+```
+
+500 - invalid user data
+
+```json
+{
+  "message": "server error: invalid user data"
+}
+```
+
 ## DELETE /users
+
+Delete a user
+
+```
+curl -X DELETE http://localhost:8080/users?id=1
+```
+
+### Required parameters
+
+*Note: Only one parameter is required; using both will result in an error*
+
+| query param | expected value | description           |
+| ----------- | -------------- | --------------------- |
+| `id`        | string         | find user by id       |
+| `username`  | string         | find user by username |
+
+### Responses
+
+All response bodies (if a response returns a body) are of the media type `application/json`
+
+204 - successfully deleted a single user
+
+```
+No Content
+```
+
+404 - user not found
+
+```json
+{
+  "message": "user not found"
+}
+```
+
+418 - invalid query
+
+```json
+{
+  "message": "invalid query"
+}
+```
+
+500 - invalid user data
+
+```json
+{
+  "message": "server error: invalid user data"
+}
+```
