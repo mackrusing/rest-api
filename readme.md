@@ -8,14 +8,12 @@
 
 A RESTful API that interacts with mock user data stored in a json file. This project is my first attempt at creating an API with node and express.
 
-- [mackrusing's RESTful API](#mackrusings-restful-api)
-  - [Installation](#installation)
-  - [Dependencies](#dependencies)
-    - [Dev dependencies](#dev-dependencies)
-  - [Usage](#usage)
-  - [Issues](#issues)
-  - [License and forking](#license-and-forking)
-  - [References](#references)
+- [Installation](#installation)
+- [Dependencies](#dependencies)
+- [Usage](#usage)
+- [Issues](#issues)
+- [License](#license)
+- [References](#references)
 
 ## Installation
 
@@ -55,9 +53,9 @@ For information on how to interact with the `/users` endpoint, refer to the [API
 
 If you find any bugs, feel free to open an issue on this projects [issue page](https://github.com/mackrusing/rest-api/issues).
 
-## License and forking
+## License
 
-All the source code is licesnsed under the
+All source code is licesnsed under the [MIT License](./license.md). Feel free to use any part of this repo in your own projects!
 
 ## References
 
