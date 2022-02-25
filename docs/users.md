@@ -13,17 +13,17 @@ Create, read, update, and delete mock user data.
 ## GET /users
 
 Retrieve all users (with no query) or a single user (using a query)
- 
-```
-curl -X GET http://localhost:8080/users?id=1
+
+```shell
+curl -X GET 'http://localhost:8080/users?id=1'
 ```
 
 ### Optional parameters
 
-| query param | expected value | description           |
-| ----------- | -------------- | --------------------- |
-| `id`        | string         | find user by id       |
-| `username`  | string         | find user by username |
+| query param | description             | example value |
+| ----------- | ----------------------- | ------------- |
+| `id`        | select user by id       | `1`           |
+| `username`  | select user by username | `johndoe`     |
 
 ### Responses
 
@@ -84,9 +84,9 @@ All response bodies (if a response returns a body) are of the media type `applic
 
 Add a new user object to the json file
 
-```
-curl -X POST http://localhost:8080/users
-  -H 'Content-Type: application/json'
+```shell
+curl -X POST 'http://localhost:8080/users' \
+  -H 'Content-Type: application/json' \
   -d '{"id": "3","username":"jamesdoe","displayName":"JamesDoe"}'
 ```
 
@@ -139,9 +139,10 @@ No Content
 ## PUT /users
 
 Add a new user or replace an existing user
-```
-curl -X PUT http://localhost:8080/users
-  -H 'Content-Type: application/json'
+
+```shell
+curl -X PUT 'http://localhost:8080/users' \
+  -H 'Content-Type: application/json' \
   -d '{"id": "3","username":"jamesdoe","displayName":"JamesDoe"}'
 ```
 
@@ -193,15 +194,15 @@ No Content
 
 Select an existing user with the query and update it with with the request body.
 
-```
-curl -X PATCH http://localhost:8080/users?id=3
-  -H 'Content-Type: application/json'
+```shell
+curl -X PATCH 'http://localhost:8080/users?id=3' \
+  -H 'Content-Type: application/json' \
   -d '{"username":"jamesdoe","displayName":"JamesDoe"}'
 ```
 
 ### Required parameters
 
-*Note: Only one parameter is required; using both will result in an error*
+_Note: Only one parameter is required; using both will result in an error_
 
 | query param | expected value | description           |
 | ----------- | -------------- | --------------------- |
@@ -213,6 +214,7 @@ curl -X PATCH http://localhost:8080/users?id=3
 The request body can include or leave out any proprties of a valid user object.
 
 Example with all values:
+
 ```json
 {
   "id": "3",
@@ -222,6 +224,7 @@ Example with all values:
 ```
 
 Example with excluded values:
+
 ```json
 {
   "username": "JamesDoe",
@@ -265,13 +268,13 @@ No Content
 
 Delete a user
 
-```
-curl -X DELETE http://localhost:8080/users?id=1
+```shell
+curl -X DELETE 'http://localhost:8080/users?id=1'
 ```
 
 ### Required parameters
 
-*Note: Only one parameter is required; using both will result in an error*
+_Note: Only one parameter is required; using both will result in an error_
 
 | query param | expected value | description           |
 | ----------- | -------------- | --------------------- |
