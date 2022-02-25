@@ -1,5 +1,6 @@
 // modules
 const fs = require('fs');
+const { usernameAllowedChars } = require('./allowed-chars');
 
 /******************************************************************************/
 /**                           alter array of users                           **/
