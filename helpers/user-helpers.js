@@ -109,11 +109,18 @@ module.exports.checkUniqUserProps = (arr, user) => {
 
 // create user object from request body
 module.exports.createUserObj = (reqBody) => {
-  const { id, login, display_name } = reqBody;
+  const original_json = JSON.stringify(reqBody);
   return {
-    id: id,
-    login: login,
-    display_name: display_name,
+    id: reqBody.id,
+    login: reqBody.login,
+    display_name: reqBody.display_name,
+    type: reqBody.type,
+    broadcaster_type: reqBody.broadcaster_type,
+    description: reqBody.description,
+    profile_image_url: reqBody.profile_image_url,
+    offline_image_url: reqBody.offline_image_url,
+    created_at: reqBody.created_at,
+    original_json: original_json,
   };
 };
 
@@ -125,5 +132,20 @@ module.exports.updateUserObj = (exUser, reqBody) => {
     display_name: reqBody.display_name
       ? reqBody.display_name
       : exUser.display_name,
+    type: reqBody.type ? reqBody.type : exUser.type,
+    broadcaster_type: reqBody.broadcaster_type
+      ? reqBody.broadcaster_type
+      : exUser.broadcaster_type,
+    description: reqBody.description ? reqBody.description : exUser.description,
+    profile_image_url: reqBody.profile_image_url
+      ? reqBody.profile_image_url
+      : exUser.profile_image_url,
+    offline_image_url: reqBody.offline_image_url
+      ? reqBody.offline_image_url
+      : exUser.profile_image_url,
+    created_at: reqBody.created_at ? reqBody.created_at : exUser.created_at,
+    original_json: reqBody.original_json
+      ? reqBody.original_json
+      : exUser.original_json,
   };
 };
