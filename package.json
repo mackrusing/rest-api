@@ -1,14 +1,14 @@
 {
   "name": "rest-api",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "A RESTful API that interacts with mock user data. My first attempt at creating an API with Node.js.",
+  "main": "main.js",
   "scripts": {
-    "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "sh scripts/start.sh",
+    "clean": "sh scripts/clean.sh"
   },
   "author": "Mack Rusing",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "express": "^4.17.2"
   },

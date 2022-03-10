@@ -38,9 +38,9 @@ module.exports.findUserById = (arr, value) => {
   return arr.filter((obj) => obj.id === value)[0];
 };
 
-// find user by username
-module.exports.findUserByUsername = (arr, value) => {
-  return arr.filter((obj) => obj.username === value)[0];
+// find user by display name
+module.exports.findUserByDisplayName = (arr, value) => {
+  return arr.filter((obj) => obj.display_name === value)[0];
 };
 
 // find index of user by id
@@ -49,8 +49,8 @@ module.exports.findUserIndexById = (arr, value) => {
   return index === -1 ? false : index;
 };
 
-module.exports.findUserIndexByUsername = (arr, value) => {
-  const index = arr.findIndex((obj) => obj.username === value);
+module.exports.findUserIndexByDisplayName = (arr, value) => {
+  const index = arr.findIndex((obj) => obj.display_name === value);
   return index === -1 ? false : index;
 };
 
@@ -62,7 +62,7 @@ module.exports.findUserIndexByUsername = (arr, value) => {
 module.exports.validateUserArr = (arr) => {
   // iterate through array
   let allIds = [];
-  let allUsernames = [];
+  let allDisplayNames = [];
   for (let i = 0; i < arr.length; i++) {
     // check for invalid user obj
     if (!this.validateUser(arr[i])) {
@@ -77,13 +77,13 @@ module.exports.validateUserArr = (arr) => {
     }
     allIds.push(arr[i].id);
 
-    // check for duplicate username
-    for (let j = 0; j < allUsernames.length; j++) {
-      if (arr[i].username === allUsernames[j]) {
+    // check for duplicate display names
+    for (let j = 0; j < allDisplayNames.length; j++) {
+      if (arr[i].display_name === allDisplayNames[j]) {
         return false;
       }
     }
-    allUsernames.push(arr[i].username);
+    allDisplayNames.push(arr[i].display_name);
   }
   return true;
 };
@@ -92,8 +92,8 @@ module.exports.validateUserArr = (arr) => {
 module.exports.validateQuery = (query) => {
   if (
     Array.isArray(query.id) ||
-    Array.isArray(query.username) ||
-    (query.id && query.username)
+    Array.isArray(query.display_name) ||
+    (query.id && query.display_name)
   ) {
     return false;
   } else {
@@ -102,17 +102,40 @@ module.exports.validateQuery = (query) => {
 };
 
 // validate user object is complete + has correct types
-module.exports.validateUser = (user) => {
+module.exports.validateUserObj = (user) => {
   // type checking
   if (
-    Object.keys(user).length !== 3 ||
     typeof user.id !== 'string' ||
-    typeof user.username !== 'string' ||
-    typeof user.displayName !== 'string'
+    typeof user.login !== 'string' ||
+    typeof user.display_name !== 'string' ||
+    typeof user.type !== 'string' ||
+    typeof user.broadcaster_type !== 'string' ||
+    typeof user.description !== 'string' ||
+    typeof user.profile_image_url !== 'string' ||
+    typeof user.offline_image_url !== 'string' ||
+    typeof user.created_at !== 'string' ||
+    typeof user.original_json !== 'string'
   ) {
     return false;
   }
+  return true;
+};
 
+// validate user request body is complete + has correct types
+module.exports.validateUserReqBody = (reqBody) => {
+  if (
+    typeof reqBody.id !== 'string' ||
+    typeof reqBody.login !== 'string' ||
+    typeof reqBody.display_name !== 'string' ||
+    typeof reqBody.type !== 'string' ||
+    typeof reqBody.broadcaster_type !== 'string' ||
+    typeof reqBody.description !== 'string' ||
+    typeof reqBody.profile_image_url !== 'string' ||
+    typeof reqBody.offline_image_url !== 'string' ||
+    typeof reqBody.created_at !== 'string'
+  ) {
+    return false;
+  }
   return true;
 };
 
@@ -124,7 +147,7 @@ module.exports.validateUser = (user) => {
 module.exports.checkUniqUserProps = (arr, user) => {
   return (
     this.findUserById(arr, user.id) ||
-    this.findUserByUsername(arr, user.username)
+    this.findUserByDisplayName(arr, user.display_name)
   );
 };
 
@@ -150,10 +173,10 @@ module.exports.writeJsonFile = (file, data) => {
 
 // create user object from request body
 module.exports.createUserObj = (reqBody) => {
-  const { id, username, displayName } = reqBody;
+  const { id, display_name, displayName } = reqBody;
   return {
     id: id,
-    username: username.toLowerCase(),
+    display_name: display_name.toLowerCase(),
     displayName: displayName,
   };
 };
@@ -162,7 +185,9 @@ module.exports.createUserObj = (reqBody) => {
 module.exports.updateUserObj = (exUser, reqBody) => {
   return {
     id: reqBody.id ? reqBody.id : exUser.id,
-    username: reqBody.username ? reqBody.username : exUser.username,
+    display_name: reqBody.display_name
+      ? reqBody.display_name
+      : exUser.display_name,
     displayName: reqBody.displayName ? reqBody.displayName : exUser.displayName,
   };
 };
