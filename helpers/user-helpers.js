@@ -1,6 +1,5 @@
 // modules
 const fs = require('fs');
-const { usernameAllowedChars } = require('./allowed-chars');
 
 /******************************************************************************/
 /**                           alter array of users                           **/
@@ -106,29 +105,14 @@ module.exports.validateQuery = (query) => {
 module.exports.validateUser = (user) => {
   // type checking
   if (
-    Object.keys(user).length !== 3 &&
-    typeof user.id !== 'string' &&
-    typeof user.username !== 'string' &&
+    Object.keys(user).length !== 3 ||
+    typeof user.id !== 'string' ||
+    typeof user.username !== 'string' ||
     typeof user.displayName !== 'string'
   ) {
     return false;
   }
 
-  // username checking
-  if (!this.validateUsernameField(user.username)) {
-    return false;
-  }
-
-  return true;
-};
-
-// validate a field has no illegal characters
-module.exports.validateUsernameField = (username) => {
-  for (let i = 0; i < username.length; i++) {
-    if (!usernameAllowedChars.includes(username[i])) {
-      return false;
-    }
-  }
   return true;
 };
 
