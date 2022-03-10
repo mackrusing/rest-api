@@ -30,51 +30,27 @@ module.exports.findUserIndexByLogin = (arr, loginQuery) => {
 /**                                validation                                **/
 /******************************************************************************/
 
-// validate all users in array
-module.exports.validateUserArr = (arr) => {
-  // iterate through array
-  let allIds = [];
-  let allLogins = [];
-  for (let i = 0; i < arr.length; i++) {
-    // check for invalid user obj
-    if (!this.validateUser(arr[i])) {
-      return false;
-    }
-
-    // check for duplicate id
-    for (let j = 0; j < allIds.length; j++) {
-      if (arr[i].id === allIds[j]) {
-        return false;
-      }
-    }
-    allIds.push(arr[i].id);
-
-    // check for duplicate logins
-    for (let j = 0; j < allLogins.length; j++) {
-      if (arr[i].login === allLogins[j]) {
-        return false;
-      }
-    }
-    allLogins.push(arr[i].logins);
-  }
-  return true;
-};
-
-// validate request query
-module.exports.validateQuery = (query) => {
+// validate request query for selecting a single user
+module.exports.validateSelectQuery = (query) => {
   if (
     Array.isArray(query.id) ||
     Array.isArray(query.login) ||
     (query.id && query.login)
   ) {
     return false;
-  } else {
-    return true;
   }
+
+  // else valid query
+  return true;
 };
 
 // validate user object is complete + has correct types
 module.exports.validateUserObj = (user) => {
+  // obj length check
+  if (Object.keys(obj).length !== 10) {
+    return false;
+  }
+
   // type checking
   if (
     typeof user.id !== 'string' ||
@@ -90,11 +66,14 @@ module.exports.validateUserObj = (user) => {
   ) {
     return false;
   }
+
+  // else valid object
   return true;
 };
 
-// validate user request body is complete + has correct types
+// validate user request body has required values + has correct types
 module.exports.validateUserReqBody = (reqBody) => {
+  // type check
   if (
     typeof reqBody.id !== 'string' ||
     typeof reqBody.login !== 'string' ||
@@ -108,6 +87,8 @@ module.exports.validateUserReqBody = (reqBody) => {
   ) {
     return false;
   }
+
+  // else valid request
   return true;
 };
 
