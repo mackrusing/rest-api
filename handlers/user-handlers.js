@@ -51,11 +51,6 @@ module.exports.getReq = (req, res) => {
   // query parameters
   const { id, username } = req.query;
 
-  // check for invalid data
-  if (!validateUserArr(data)) {
-    return res.status(500).send(dataErr);
-  }
-
   // check for invalid query
   if (!validateQuery(req.query)) {
     return res.status(418).send(invalidQueryErr);
@@ -100,11 +95,6 @@ module.exports.postReq = (req, res) => {
   // create user object
   const newUser = createUserObj(req.body);
 
-  // check for invalid data
-  if (!validateUserArr(data)) {
-    return res.status(500).send(dataErr);
-  }
-
   // check for invalid user object
   if (!validateUser(newUser)) {
     return res.status(418).send(invalidUserObjErr);
@@ -131,11 +121,6 @@ module.exports.putReq = (req, res) => {
 
   // create user object
   const newUser = createUserObj(req.body);
-
-  // check for invalid data
-  if (!validateUserArr(data)) {
-    return res.status(500).send(dataErr);
-  }
 
   // check for invalid user object
   if (!validateUser(newUser)) {
@@ -198,11 +183,6 @@ module.exports.patchReq = (req, res) => {
   // get query parameters
   const { id, username } = req.query;
 
-  // check for invalid data
-  if (!validateUserArr(data)) {
-    return res.status(500).send(dataErr);
-  }
-
   // check for invalid query
   if (!validateQuery(req.query)) {
     return res.status(418).send(invalidQueryErr);
@@ -260,11 +240,6 @@ module.exports.deleteReq = (req, res) => {
 
   // get query parameters
   const { id, username } = req.query;
-
-  // check for invalid data
-  if (!validateUserArr(data)) {
-    return res.status(500).send(dataErr);
-  }
 
   // check for invalid query
   if (!validateQuery(req.query)) {
