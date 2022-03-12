@@ -21,6 +21,7 @@ module.exports.findUserIndexById = (arr, idQuery) => {
   return index === -1 ? false : index;
 };
 
+// find index of user by login
 module.exports.findUserIndexByLogin = (arr, loginQuery) => {
   const index = arr.findIndex((obj) => obj.login === loginQuery);
   return index === -1 ? false : index;
@@ -71,7 +72,7 @@ module.exports.validateUserObj = (user) => {
   return true;
 };
 
-// validate user request body has required values + has correct types
+// validate user request body has required values with correct types
 module.exports.validateUserReqBody = (reqBody) => {
   // type check
   if (
